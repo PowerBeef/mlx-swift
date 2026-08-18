@@ -272,9 +272,17 @@ let cmlx = Target.target(
         "mlx/mlx/distributed/nccl/nccl.cpp",
         "mlx/mlx/distributed/nccl/nccl_stub",
         "mlx/mlx/distributed/jaccl/jaccl.cpp",
-        "mlx/mlx/distributed/jaccl/mesh.cpp",
-        "mlx/mlx/distributed/jaccl/ring.cpp",
-        "mlx/mlx/distributed/jaccl/utils.cpp",
+        "mlx/mlx/distributed/jaccl/lib",
+
+        // NAX generated sources conflict with jit_kernels.cpp stubs under
+        // MLX_METAL_NO_NAX (base macOS-15-floor build).
+        "mlx-generated/fp_quantized_nax.cpp",
+        "mlx-generated/gemm_nax.cpp",
+        "mlx-generated/quantized_nax.cpp",
+        "mlx-generated/steel_attention_nax.cpp",
+        "mlx-generated/steel_gemm_fused_nax.cpp",
+        "mlx-generated/steel_gemm_gather_nax.cpp",
+        "mlx-generated/steel_gemm_splitk_nax.cpp",
     ],
     cSettings: [
         .headerSearchPath("mlx"),
@@ -286,7 +294,11 @@ let cmlx = Target.target(
         .headerSearchPath("mlx-c"),
         .headerSearchPath("json/single_include/nlohmann"),
         .headerSearchPath("fmt/include"),
-        .define("MLX_VERSION", to: "\"0.31.1\""),
+        .define("MLX_VERSION", to: "\"0.32.1\""),
+        // Base build (macOS 15 floor): exclude NAX kernel paths to match the
+        // MACOS_VERSION=14.0 code generation. The NAX-enabled variant (26.2+
+        // deployment, regenerated kernels) is a separate build config.
+        .define("MLX_METAL_NO_NAX"),
     ],
     linkerSettings: linkerSettings,
     plugins: [

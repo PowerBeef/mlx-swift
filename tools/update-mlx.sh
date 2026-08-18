@@ -37,6 +37,7 @@ make \
     gather_front \
     gemm \
     gemm_nax \
+    gemv \
     gemv_masked \
     hadamard \
     logsumexp \
@@ -49,6 +50,7 @@ make \
     scan \
     scatter \
     scatter_axis \
+    searchsorted \
     softmax \
     sort \
     steel_attention \
