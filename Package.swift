@@ -278,8 +278,9 @@ let cmlx = Target.target(
         "mlx/mlx/distributed/jaccl/jaccl.cpp",
         "mlx/mlx/distributed/jaccl/lib",
 
-        // NAX generated sources conflict with jit_kernels.cpp stubs under
-        // MLX_METAL_NO_NAX (base macOS-15-floor build).
+        // NAX JIT-source strings are referenced only by jit_kernels.cpp,
+        // which the nojit build excludes; the metallib carries the compiled
+        // NAX kernels that nojit_kernels.cpp resolves by name.
         "mlx-generated/fp_quantized_nax.cpp",
         "mlx-generated/gemm_nax.cpp",
         "mlx-generated/quantized_nax.cpp",
@@ -299,10 +300,6 @@ let cmlx = Target.target(
         .headerSearchPath("json/single_include/nlohmann"),
         .headerSearchPath("fmt/include"),
         .define("MLX_VERSION", to: "\"0.32.1\""),
-        // Base build (macOS 15 floor): exclude NAX kernel paths to match the
-        // MACOS_VERSION=14.0 code generation. The NAX-enabled variant (26.2+
-        // deployment, regenerated kernels) is a separate build config.
-        .define("MLX_METAL_NO_NAX"),
     ],
     linkerSettings: linkerSettings,
     plugins: [
@@ -314,10 +311,13 @@ let package = Package(
     name: "mlx-swift",
 
     platforms: [
-        .macOS("14.0"),
-        .iOS(.v17),
-        .tvOS(.v17),
-        .visionOS(.v1),
+        // 26.2 floor (Imarello fork): core's NAX (Neural Accelerator) host
+        // paths compile in; is_nax_available() still runtime-gates them to
+        // A19/M5-class hardware, so pre-NAX chips behave identically.
+        .macOS("26.2"),
+        .iOS("26.2"),
+        .tvOS("26.2"),
+        .visionOS("26.2"),
     ],
 
     products: [
