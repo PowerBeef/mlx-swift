@@ -264,7 +264,11 @@ let cmlx = Target.target(
 
         // see PrepareMetalShaders -- don't build the kernels in place
         "mlx/mlx/backend/metal/kernels",
-        "mlx/mlx/backend/metal/nojit_kernels.cpp",
+        // NOJIT mode (2026-08-18): core 0.32.1's runtime JIT template strings
+        // for affine_qmv are inconsistent with the 5-param JIT header (host
+        // passes 6 args); the prebuilt metallib has every variant, so serve
+        // kernels by name instead of source-building them.
+        "mlx/mlx/backend/metal/jit_kernels.cpp",
 
         // do not build distributed support (yet)
         "mlx/mlx/distributed/mpi/mpi.cpp",
