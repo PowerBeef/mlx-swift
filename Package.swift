@@ -182,6 +182,9 @@ let noCudaCmlxExcludes = [
     let platformExcludes: [String] =
         [
             "mlx/mlx/backend/cpu/compiled.cpp",
+            // 0.32.1's CPU JIT shells out via std::system — absent on iOS, and
+            // its sole consumer (cpu/compiled.cpp) is excluded here anyway.
+            "mlx/mlx/backend/cpu/jit_compiler.cpp",
 
             // opt-out of these backends (using metal)
             "mlx/mlx/backend/no_gpu",
